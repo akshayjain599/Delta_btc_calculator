@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Options Fee Calculator</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #111;
+      color: #fff;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background: orange;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      background: #222;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>📊 Options Fee & ROI Calculator</h2>
+
+<h3>Enter Legs</h3>
+
+<div id="legs">
+  <div>
+    Premium: <input type="number" step="0.01" class="premium">
+    Quantity: <input type="number" step="0.01" class="qty">
+  </div>
+</div>
+
+<button onclick="addLeg()">➕ Add Leg</button>
+
+<h3>Trade Inputs</h3>
+Margin Deployed: <input type="number" id="margin"><br>
+Target Profit: <input type="number" id="target"><br>
+
+<button onclick="calculate()">🚀 Calculate</button>
+
+<div class="result" id="output"></div>
+
+<script>
+
+function addLeg() {
+  let div = document.createElement("div");
+  div.innerHTML = `
+    Premium: <input type="number" step="0.01" class="premium">
+    Quantity: <input type="number" step="0.01" class="qty">
+  `;
+  document.getElementById("legs").appendChild(div);
+}
+
+function calculate() {
+  let premiums = document.getElementsByClassName("premium");
+  let qtys = document.getElementsByClassName("qty");
+
+  let totalPremium = 0;
+
+  for (let i = 0; i < premiums.length; i++) {
+    let p = parseFloat(premiums[i].value) || 0;
+    let q = parseFloat(qtys[i].value) || 0;
+    totalPremium += Math.abs(p * q);
+  }
+
+  // Fees = 7% of premium
+  let fees = totalPremium * 0.07;
+
+  // GST = 18% of fees
+  let gst = fees * 0.18;
+
+  let totalCost = fees + gst;
+
+  let target = parseFloat(document.getElementById("target").value) || 0;
+  let margin = parseFloat(document.getElementById("margin").value) || 1;
+
+  let netProfit = target - totalCost;
+  let roi = (netProfit / margin) * 100;
+
+  document.getElementById("output").innerHTML = `
+    <h3>📊 Results</h3>
+    Total Premium: $${totalPremium.toFixed(2)} <br><br>
+
+    Fees (7%): $${fees.toFixed(2)} <br>
+    GST (18%): $${gst.toFixed(2)} <br>
+    <b>Total Cost: $${totalCost.toFixed(2)}</b> <br><br>
+
+    Gross Profit: $${target.toFixed(2)} <br>
+    Net Profit: <b>$${netProfit.toFixed(2)}</b> <br><br>
+
+    <b>Return on Capital: ${roi.toFixed(2)}%</b>
+  `;
+}
+
+</script>
+
+</body>
+</html>
